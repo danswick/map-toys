@@ -17,10 +17,12 @@ $.getJSON(yourDataFile, function(data) {
     var map = L.map('map').fitBounds(geojson.getBounds());
     mapTiles.addTo(map);
     geojson.addTo(map);
-    svgCrowbar();
   });
 
-
+$('#download-button').on('click', function(e){
+  e.preventDefault();
+  svgCrowbar();
+});
 
 
 

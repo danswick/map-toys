@@ -13,11 +13,22 @@
     	html, body, #map {
     		height: 100%;
     	}
+        
+        #download-button {
+            background-color: #333;
+            color: #fff;
+            border: none; 
+            padding: 10px;
+            border: 2px solid #eee;
+            position: absolute;
+            top: 93%;
+            left: 1%;
+        }
     </style>
-    <script type="text/javascript" src="leaflet.ajax.js"></script>
 </head>
 <body>
     <div id="map"></div>
+    <button id="download-button">Download Your Geojson</button>
     <script src="jquery.js"></script>
     <script src="d3.js"></script>
     <script src="script.js"></script>
