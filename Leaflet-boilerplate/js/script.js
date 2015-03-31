@@ -9,7 +9,10 @@ var mapTiles = L.tileLayer('https://{s}.tiles.mapbox.com/v4/danswick.lff6ij2d/{z
 // ======= SWAP OUT THE FILENAME BELOW FOR YOUR FILE ======= //
  var yourFilePath = "js/LM.json";
 
-// ========================================================= //
+// --------------------------------------------------------- //
+
+
+
 
 // ==== OR CONSTRUCT ONE HERE AND SWAP THE VARIABLE NAME === //
 var yourGeoJson = [{
@@ -34,18 +37,22 @@ var yourGeoJson = [{
   }
 }];
 
-
-
 var geojson = L.geoJson(yourGeoJson);
 
-// ========================================================= //
+// --------------------------------------------------------- //
 
+
+
+
+// ================ INITIALIZE THE MAP ===================== //
 var map = L.map('map').fitBounds(geojson.getBounds());
 
+
+// ================= ADD LAYERS TO THE MAP ================ //
 mapTiles.addTo(map);
 geojson.addTo(map);
 
-$.getJSON(yourFilePath, function(data){
+$.getJSON(yourFilePath, function(data){ // USE JQUERY TO MAKE HTTP REQUEST FOR EXTERNAL FILE
   // check for var with file path
   if (yourFilePath != "undefined") {
     var passedJson = L.geoJson(data);
