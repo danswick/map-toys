@@ -1,0 +1,10 @@
+.popup-image {
+	width: 100%;
+}
+
+.leaflet-popup-content {
+	overflow-y: scroll;
+	overflow-x: hidden;
+	max-height: 350px;
+}
+
