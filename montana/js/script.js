@@ -14,6 +14,7 @@ function showInfo(data, tabletop){
 	console.log( "Here is your data", sheetData);
 
 	mapFunctions();
+	$('#openModal').remove();
 }
 
 
@@ -64,7 +65,7 @@ pointLayer.on('layeradd', function(e) {
 	// Create custom popup content
 	var popupContent = '<h3>' + feature.properties.name + '</h3>' + 
 						'<p>' + feature.properties.description + '</p>' +
-						'<p>' + '<a class="popup" href="' + feature.properties.link + '">link</a>' +
+						'<p>' + '<a target="_blank" class="popup" href="' + feature.properties.link + '">link</a>' +
 						'<br>' +
 						'<img class="popup-image" src="' + feature.properties.imageUrl + '" />';
 
