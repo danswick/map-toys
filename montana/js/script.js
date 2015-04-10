@@ -51,7 +51,7 @@ for ( var i = 0; i < sheetData.length; i++) {
 
 L.mapbox.accessToken = "pk.eyJ1IjoiZGFuc3dpY2siLCJhIjoieUZiWmwtVSJ9.0cPQywdbPVmvHiHJ6NwdXA";
 var map = L.mapbox.map('map', 'mapbox.outdoors')
-                  .setView([47.7, -114.014270], 8)
+                  .setView([48, -114.014270], 8)
                   /*.featureLayer.setGeoJSON(sheetGeoJson)*/;
 var pointLayer = L.mapbox.featureLayer().addTo(map);
 
@@ -80,3 +80,4 @@ pointLayer.on('layeradd', function(e) {
 pointLayer.setGeoJSON(sheetGeoJson);
 
 }
+

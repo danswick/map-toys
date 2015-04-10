@@ -1,5 +1,6 @@
 .popup-image {
 	width: 100%;
+	box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.5);
 }
 
 .leaflet-popup-content {
@@ -8,3 +9,24 @@
 	max-height: 350px;
 }
 
+.spreadsheet-link {
+	position: fixed;
+	bottom: 0.5em;
+	left: 0.5em;
+	background-color: #333;
+	color: #fff;
+	padding: 0.5em;
+	border-radius: 3px;
+	z-index: 999999;
+	box-shadow: 0px 0px 5px 1px rgba(0, 0, 0, 0.5);
+}
+
+.spreadsheet-link:hover {
+	background-color: #444;
+}
+
+.spreadsheet-link a {
+	text-decoration: none;
+	color: #fff;
+	font-weight: bold;
+}
