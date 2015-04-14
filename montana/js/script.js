@@ -55,7 +55,7 @@ var map = L.mapbox.map('map', 'mapbox.outdoors')
 var pointLayer = L.mapbox.featureLayer().addTo(map);
 
 var trailLayer = L.mapbox.featureLayer()
-						 .loadURL('data/glacier_trails.geojson')
+						 .loadURL('https://gist.githubusercontent.com/danswick/70549ec10da7f81b6120/raw/glacier_trails.geojson')
 						 .addTo(map);
 
 // Add custom popups to each point
