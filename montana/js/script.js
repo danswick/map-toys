@@ -46,8 +46,6 @@ for ( var i = 0; i < sheetData.length; i++) {
 	sheetGeoJson.push(pointFun);
 	}
 
-
-
 // Add empty feature layer to prepare for custom markers
 
 L.mapbox.accessToken = "pk.eyJ1IjoiZGFuc3dpY2siLCJhIjoieUZiWmwtVSJ9.0cPQywdbPVmvHiHJ6NwdXA";
@@ -56,8 +54,11 @@ var map = L.mapbox.map('map', 'mapbox.outdoors')
                   /*.featureLayer.setGeoJSON(sheetGeoJson)*/;
 var pointLayer = L.mapbox.featureLayer().addTo(map);
 
+var trailLayer = L.mapbox.featureLayer()
+						 .loadURL('/data/glacier_trails.geojson')
+						 .addTo(map);
 
-// Add custom popups to each
+// Add custom popups to each point
 pointLayer.on('layeradd', function(e) {
 	var marker = e.layer,
 		feature = marker.feature;
@@ -75,6 +76,41 @@ pointLayer.on('layeradd', function(e) {
 		closeButton: false,
 		minWidth: 450
 	});
+});
+
+// Add custom popups to each trail
+trailLayer.on('layeradd', function(e) {
+	var trail = e.layer,
+		feature = trail.feature;
+
+	// Create custom popup content
+	var popupContent = '<h3>' + feature.properties.NAME + '</h3>' + 
+						'<p>' + feature.properties.DESC_SEG + '</p>' +
+						'<p>' + "Average slope: " + feature.properties.Avg_Slope + '</p>';
+
+
+	// bind popup to lines
+	trail.bindPopup(popupContent, {
+		closeButton: false,
+		minWidth: 450
+	});
+
+	// set style
+	if (feature.properties.evaluating === 'yes') {
+		trail.setStyle({
+			color: '#B63833',
+			weight: 3,
+	 		opacity: 0.9,
+	 		dashArray: '3'
+		});
+	} else {
+		trail.setStyle({
+		 	color: '#921E11',
+		 	weight: 1,
+		 	opacity: 0.6,
+		 	dashArray: '5'
+		});
+	}
 });
 
 // Add features to the map
