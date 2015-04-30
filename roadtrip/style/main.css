@@ -107,7 +107,9 @@ textarea {
     margin: 0 auto;
 }
 
-
+.content-container {
+    background-color: #2c7fb8;
+}
 
 /* color pallette
    --------------
@@ -136,7 +138,7 @@ header h1, header h2, header i {
 header {
     text-align: center;
     margin: 0 auto 0 auto;
-    border-bottom: 1em solid #2c7fb8;
+    border-bottom: 2em solid #2c7fb8;
     background-color: #2c7fb8;
     color: #fff;
 }
@@ -169,8 +171,9 @@ header p {
 }
 
 .itinerary-item {
-    background-color: #fff;
+    background-color: #2c7fb8; 
     margin-bottom: 1em;
+    border-bottom: 1px dashed #fff;
 }
 
 img.elev-profile {
@@ -190,12 +193,14 @@ img.itinerary-image {
     padding-left: 1.5em;
     background-color: #2c7fb8;
     color: #fff;
+    border-left: 0px solid #7fcdbb;
     transition: all 0.2s linear;
     -webkit-transition: all 0.2s linear;
 }
 
 .itinerary-header:hover {
-    box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.8);
+    border-left: 8px solid #7fcdbb;
+    /*box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.8);*/
 }
 
 .itinerary-description {
@@ -219,7 +224,7 @@ img.itinerary-image {
 
 .itinerary-item-content {
     max-height: 0px;
-    padding-top: 1em;
+    padding: 1em 1em 0 1em;
     overflow: hidden;
     transition: all 0.7s linear;
     -webkit-transition: all 0.7s linear;
@@ -256,6 +261,7 @@ img.itinerary-image, img.elev-profile {
 /* - - - - - day interaction - - - - - */
 .itinerary-item-content.visible {
     max-height: 700px;
+    background-color: #fff;
 }
 
 
