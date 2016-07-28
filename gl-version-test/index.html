@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title></title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <style>
+        * { box-sizing: border-box; }
+        body { margin:0; padding:0; }
+        #styleForm button { 
+          border: none;
+          outline: none;
+          padding: 0.6em;
+          background-color: #ee8a65;
+          font-family: Helvetica, Arial, Sans-Serif;
+          color: #fff;
+          border-radius: 0.2em;
+          margin-top: 1em;
+          cursor: pointer;
+          font-size: 0.8em;
+        }
+        #styleForm p {
+          font-family: Helvetica, Arial, Sans-Serif;
+          margin-bottom: 0.4em;
+        }
+        #styleText, #accessToken {
+          width: 250px;
+          height: 2em;
+          display: block;
+          margin-bottom: 1.5em;
+        }
+        button:hover {
+          background-color: #DA7752;
+        }
+
+
+        #map { position:absolute; top:0; bottom:0; width:100%; }
+        #styleForm {
+          position: absolute;
+          top: 1em;
+          right: 1em;
+          background-color: #fff;
+          padding: 1em;
+        }
+    </style>
+</head>
+<body>
+
+<div id='map'></div>
+<div id='styleForm'>
+  <p>Mapbox Style Username and Style ID</p>
+  <input type='text' id='styleText' name='style' value='mapbox/streets-v8'>
+  <p>Access Token</p>
+  <input type='text' id='accessToken' name='token' value=''>
+  <button id="styleSubmitButton">Switch to new style</button>
+  <br>
+  <p>Mapbox GL JS Version</p>
+  <select id="mapboxVersionSelect" onchange="versionChange(event)"></select>
+  <p>Debug options</p>
+  <button id="tileBorders">Display tile boundaries</button>
+  <button id="collisionBoxes">Display collision boxes</button>
+</div>
+<script>
+/*
+*
+*  To update the list of available Mapbox GL JS versions: 
+*  - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+*  go to https://github.com/mapbox/mapbox-gl-js/releases and paste the below
+*  into the console to get all of the release versions
+*
+  var releases = document.querySelectorAll('.release-title a');
+  var releaseValues = [];
+  for(i=0; i < releases.length; i++) { releaseValues.push(releases[i].firstChild.nodeValue) };
+  copy(releaseValues);
+*
+*/
+
+// set up variables and default values
+var mapboxGlJsVersions = ["v0.21.0","v0.20.1","v0.20.0","v0.19.1","v0.19.0","v0.18.0","v0.17.0","v0.16.0","v0.15.0","v0.14.3"];
+
+var map;
+var qs;
+var defaultStyle = 'mapbox://style/mapbox/streets-v8';
+var defaultToken = 'pk.eyJ1IjoiZGFuc3dpY2siLCJhIjoieUZiWmwtVSJ9.0cPQywdbPVmvHiHJ6NwdXA';
+var defaultVersion = 'v0.21.0';
+
+var mapParameters = {
+  style: "",
+  access_token: "",
+  gl_version: "",
+  center: [-122.08586,37.98503],
+  zoom: 11
+}
+
+var versionSelectHtml = '';
+var versionSelectEl = document.getElementById('mapboxVersionSelect');
+
+// create dropdown menu items from list of available versions 
+for (i = 0; i < mapboxGlJsVersions.length; i++) {
+  if(i === mapboxGlJsVersions.length - 1) {
+    versionSelectHtml + "<option value='" + mapboxGlJsVersions[i] + "'>" + mapboxGlJsVersions[i] + "</option>";
+    versionSelectEl.innerHTML = versionSelectHtml;
+  } else {
+    versionSelectHtml += "<option value='" + mapboxGlJsVersions[i] + "'>" + mapboxGlJsVersions[i] + "</option>";
+  }
+}
+
+// when the page loads...
+ready(function() {
+    doTheDangThing();
+});
+
+
+/*
+*
+* Functions! 
+* - - - - - 
+*
+*/
+
+// check for query string values and request the correct libraries accordingly,
+// then call the loadScript() function to make it all work! 
+function doTheDangThing() {
+  qs = parseUrl(); // update querystring values before updating the GL JS libraries
+  
+  if (qs.style && qs.access_token && qs.gl_js_version){
+    // if all required qs are ready, use them to make a map
+    var jsUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + qs.gl_js_version + "/mapbox-gl.js";
+    var cssUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + qs.gl_js_version + "/mapbox-gl.css";
+    mapParameters.style = qs.style;
+    mapParameters.access_token = qs.access_token;
+    mapParameters.gl_version = qs.gl_js_version;
+    loadScript(jsUrl, cssUrl, initGL);
+  } else if(qs.style && qs.access_token) {
+    // if all except version are ready, load latest 
+    // known version 
+    var jsUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + mapboxGlJsVersions[0] + "/mapbox-gl.js";
+    var cssUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + mapboxGlJsVersions[0] + "/mapbox-gl.css";
+    mapParameters.style = qs.style;
+    mapParameters.access_token = qs.access_token;
+    mapParameters.gl_version = mapboxGlJsVersions[0];
+    loadScript(jsUrl, cssUrl, initGL);
+  } else {
+    // if not all required qs are ready, build a map 
+    // with some default values and latest known GL JS version
+    var jsUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + mapboxGlJsVersions[0] + "/mapbox-gl.js";
+    var cssUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + mapboxGlJsVersions[0] + "/mapbox-gl.css";
+    mapParameters.style = defaultStyle;
+    mapParameters.access_token = defaultToken;
+    mapParameters.gl_version = mapboxGlJsVersions[0];
+    loadScript(jsUrl, cssUrl, initGL);
+  }      
+}
+
+// parse query string
+function parseUrl() {
+  qs = (function(a) {
+      if (a == "") return {};
+      var b = {};
+      for (var i = 0; i < a.length; ++i)
+      {
+          var p=a[i].split('=', 2);
+          if (p.length == 1)
+              b[p[0]] = "";
+          else
+              b[p[0]] = decodeURIComponent(p[1].replace(/\+/g, " "));
+      }
+      return b;
+  })(window.location.search.substr(1).split('&'));
+  return qs;
+}
+
+// when the user selects a new GL JS version, grab the available user-provided
+// info and update the map 
+function versionChange(event) {
+  var version = event.target.value;
+  mapParameters.center = map.getCenter();
+  mapParameters.zoom = map.getZoom();
+  
+  // send version to querystring constructor 
+  var userEntries = getUserEntries();
+
+  // update the url params
+  updateUrl(userEntries[0], userEntries[1], version);
+  // move these to page load function 
+  var jsUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + version + "/mapbox-gl.js";
+  var cssUrl = "https://api.tiles.mapbox.com/mapbox-gl-js/" + version + "/mapbox-gl.css";
+
+  doTheDangThing();
+}
+
+// look in the user-input form for values
+function getUserEntries() {
+  var styleTextEl = document.getElementById('styleText');
+  var styleUrl = styleTextEl.value;
+  var tokenEl = document.getElementById('accessToken');
+  var tokenVal = tokenEl.value;
+  return [styleUrl, tokenVal];
+}
+
+// callback for loadScript()
+// loads a new mapboxgl map with the appropriate settings
+function initGL() {
+    mapboxgl.accessToken = mapParameters.access_token;
+    map = new mapboxgl.Map({
+        container: 'map', 
+        style: "mapbox://styles/" + mapParameters.style, 
+        center: mapParameters.center, 
+        zoom: mapParameters.zoom
+    });
+    map.addControl(new mapboxgl.Navigation({position: 'top-left'}));
+}
+
+// requests new assets and replaces the old ones
+function loadScript(sScriptSrc, cssSrc, oCallback) {
+
+    // check for existing Mapbox GL JS assets and remove them
+    // if they exist. Clear the contents of the map container
+    // to make room for the new map
+    if (document.head.children[document.head.children.length-1].id === 'mapbox-gl-script') {
+      var numHeadEls = document.head.children.length;
+      var oldJS = document.head.children[numHeadEls - 1];
+      var oldCSS = document.head.children[numHeadEls - 2];
+
+      var oldMap = document.getElementById('map');
+      while (oldMap.firstChild) {
+        oldMap.removeChild(oldMap.firstChild);
+      }
+
+      addJSandCSS();
+      
+    } else {
+      addJSandCSS();
+    }
+
+    // the guts of the library request
+    function addJSandCSS() {
+       // adapted from - http://stackoverflow.com/questions/11160948/how-to-know-if-jquery-has-finished-loading/11161045#11161045.1
+
+      if (numHeadEls) { oldJS.remove(); oldCSS.remove(); }
+
+      var oHead = document.getElementsByTagName('head')[0];
+      var oScript = document.createElement('script');
+
+      var oCss = document.createElement('link');
+      oCss.href = cssSrc;
+      oCss.rel = 'stylesheet';
+      oHead.appendChild(oCss);
+
+      // make sure callback isn't run more than once
+      function runCallback() {
+          if (oCallback) {
+              oCallback();
+              oScript.onload = oScript.onreadystatechange = null;
+              oCallback = null;
+          }
+      }
+
+      oScript.type = 'text/javascript';
+      oScript.id = 'mapbox-gl-script';
+      // most browsers
+      oScript.onload = runCallback;
+      // IE 6 & 7
+      oScript.onreadystatechange = function() {
+          if (this.readyState === 'complete') {
+              runCallback();
+          }
+      }
+      oScript.src = sScriptSrc;
+      oHead.appendChild(oScript);
+    }
+}
+
+// update the URL query string with new info! 
+function updateUrl(styleUrl, tokenVal, versionNum) {
+  if (tokenVal) {
+    var currentUrl = window.location.origin + window.location.pathname;
+    if (history.pushState) {
+        var newurl = window.location.origin + window.location.pathname + '?style=' + styleUrl + '&access_token=' + tokenVal + '&gl_js_version=' + versionNum;
+        window.history.pushState({path:newurl},'',newurl);
+    }
+  } else {
+    alert('please provide a valid access token!')
+  }
+  parseUrl();
+}
+
+// jQuery-style onready function 
+function ready(fn) {
+  if (document.readyState != 'loading'){
+    fn();
+  } else {
+    document.addEventListener('DOMContentLoaded', fn);
+  }
+}
+
+/*
+*  Interactions! 
+*  - - - - - - - 
+*
+*/
+
+var tileButton = document.getElementById('tileBorders');
+tileButton.onclick = function(e){
+  map.showTileBoundaries = true;
+};
+
+var collisionButton = document.getElementById('collisionBoxes');
+collisionButton.onclick = function(e){
+  map.showCollisionBoxes = true;
+}
+
+var styleButton = document.getElementById('styleSubmitButton');
+styleButton.onclick = function(e) {
+  e.preventDefault();
+  parseUrl();
+  var userEntries = getUserEntries();
+  mapParameters.center = map.getCenter();
+  mapParameters.zoom = map.getZoom();
+
+  updateUrl(userEntries[0], userEntries[1], qs.gl_js_version);
+  doTheDangThing();
+};
+
+
+</script>
+
+</body>
+</html>
