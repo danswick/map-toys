@@ -49,7 +49,7 @@
 <div id='map'></div>
 <div id='styleForm'>
   <p>Mapbox Style Username and Style ID</p>
-  <input type='text' id='styleText' name='style' value='mapbox/streets-v8'>
+  <input type='text' id='styleText' name='style' value='mapbox/streets-v9'>
   <p>Access Token</p>
   <input type='text' id='accessToken' name='token' value=''>
   <button id="styleSubmitButton">Switch to new style</button>
@@ -80,14 +80,14 @@ var mapboxGlJsVersions = ["v0.21.0","v0.20.1","v0.20.0","v0.19.1","v0.19.0","v0.
 
 var map;
 var qs;
-var defaultStyle = 'mapbox://style/mapbox/streets-v8';
+var defaultStyle = 'mapbox/streets-v9';
 var defaultToken = 'pk.eyJ1IjoiZGFuc3dpY2siLCJhIjoieUZiWmwtVSJ9.0cPQywdbPVmvHiHJ6NwdXA';
 var defaultVersion = 'v0.21.0';
 
 var mapParameters = {
   style: "",
   access_token: "",
-  gl_version: "",
+  gl_version: mapboxGlJsVersions[0],
   center: [-122.08586,37.98503],
   zoom: 11
 }
@@ -318,7 +318,7 @@ styleButton.onclick = function(e) {
   mapParameters.center = map.getCenter();
   mapParameters.zoom = map.getZoom();
 
-  updateUrl(userEntries[0], userEntries[1], qs.gl_js_version);
+  updateUrl(userEntries[0], userEntries[1], mapParameters.gl_version);
   doTheDangThing();
 };
 
